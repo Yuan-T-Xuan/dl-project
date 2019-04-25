@@ -23,6 +23,12 @@ def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda):
     optimizer_Dy = optim.Adam(Dy.parameters(), lr = lr)
     for e in range(epochs):
         print(e)
+        if e % 3 == 0:
+            torch.save(G, "/content/gdrive/My Drive/saved_G_" + str(e) + ".pt")
+            torch.save(F, "/content/gdrive/My Drive/saved_F_" + str(e) + ".pt")
+            torch.save(Dx, "/content/gdrive/My Drive/saved_Dx_" + str(e) + ".pt")
+            torch.save(Dy, "/content/gdrive/My Drive/saved_Dy_" + str(e) + ".pt")
+            #
         _iter_y = data_loader_y.__iter__()
         for _imgs_x, _ in tqdm(data_loader_x):
             _imgs_y = _iter_y.__next__()[0]
