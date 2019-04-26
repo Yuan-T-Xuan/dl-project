@@ -3,7 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 def init_weights(m):
-    nn.init.normal(m.weight, mean=0, std=0.02)
+    if type(m) in [nn.Conv2d, nn.ConvTranspose2d, nn.Linear]:
+        nn.init.normal(m.weight, mean=0, std=0.02)
 
 
 class G(nn.Module):
