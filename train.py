@@ -1,5 +1,6 @@
 import torch
 import model
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 from torch import optim
 
@@ -16,7 +17,7 @@ def loss_cyc(generated_x, generated_y, imgs_x, imgs_y, G, F):
     part2 = torch.mean((G(generated_x) - imgs_y).pow(2))
     return part1 + part2
 
-def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda):
+def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda, e_offset=0):
     optimizer_G = optim.Adam(G.parameters(), lr = lr)
     optimizer_F = optim.Adam(F.parameters(), lr = lr)
     optimizer_Dx = optim.Adam(Dx.parameters(), lr = lr)
@@ -24,12 +25,15 @@ def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda):
     for e in range(epochs):
         print(e)
         if e % 3 == 0:
-            torch.save(G, "/content/gdrive/My Drive/saved_G_" + str(e) + ".pt")
-            torch.save(F, "/content/gdrive/My Drive/saved_F_" + str(e) + ".pt")
-            torch.save(Dx, "/content/gdrive/My Drive/saved_Dx_" + str(e) + ".pt")
-            torch.save(Dy, "/content/gdrive/My Drive/saved_Dy_" + str(e) + ".pt")
+            torch.save(G, "/content/gdrive/My Drive/model1_test1/saved_G_" + str(e_offset+e) + ".pt")
+            torch.save(F, "/content/gdrive/My Drive/model1_test1/saved_F_" + str(e_offset+e) + ".pt")
+            torch.save(Dx, "/content/gdrive/My Drive/model1_test1/saved_Dx_" + str(e_offset+e) + ".pt")
+            torch.save(Dy, "/content/gdrive/My Drive/model1_test1/saved_Dy_" + str(e_offset+e) + ".pt")
             #
         _iter_y = data_loader_y.__iter__()
+        for_plot_GF = list()
+        for_plot_Dx = list()
+        for_plot_Dy = list()
         for _imgs_x, _ in tqdm(data_loader_x):
             _imgs_y = _iter_y.__next__()[0]
             _imgs_x = _imgs_x.cuda()
@@ -39,16 +43,25 @@ def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda):
             # train Ds
             Dx.zero_grad()
             loss_x = loss_D(_imgs_x, generated_x, Dx)
+            for_plot_Dx.append(loss_x.item())
             loss_x.backward(retain_graph=True)
             optimizer_Dx.step()
             Dy.zero_grad()
             loss_y = loss_D(_imgs_y, generated_y, Dy)
+            for_plot_Dy.append(loss_y.item())
             loss_y.backward(retain_graph=True)
             optimizer_Dy.step()
             # train G and F
             G.zero_grad()
             F.zero_grad()
             loss = loss_G(generated_x, Dx) + loss_G(generated_y, Dy) + lmbda * loss_cyc(generated_x, generated_y, _imgs_x, _imgs_y, G, F)
+            for_plot_GF.append(loss.item())
             loss.backward(retain_graph=False)
             optimizer_G.step()
             optimizer_F.step()
+        plt.plot(for_plot_Dx)
+        plt.show()
+        plt.plot(for_plot_Dy)
+        plt.show()
+        plt.plot(for_plot_GF)
+        plt.show()
