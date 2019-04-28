@@ -11,15 +11,15 @@ class G(nn.Module):
     def __init__(self):
         super(G, self).__init__()
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
-        self.norm1 = nn.InstanceNorm2d(32)
+        self.norm1 = nn.InstanceNorm2d(32, affine=True)
         self.conv2 = nn.Conv2d(32, 128, kernel_size=3, stride=2, padding=1)
-        self.norm2 = nn.InstanceNorm2d(128)
+        self.norm2 = nn.InstanceNorm2d(128, affine=True)
         self.conv3 = nn.Conv2d(128, 256, kernel_size=5, stride=2, padding=2)
-        self.norm3 = nn.InstanceNorm2d(256)
+        self.norm3 = nn.InstanceNorm2d(256, affine=True)
         self.deconv1 = nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1)
-        self.norm4 = nn.InstanceNorm2d(128)
+        self.norm4 = nn.InstanceNorm2d(128, affine=True)
         self.deconv2 = nn.ConvTranspose2d(128, 32, kernel_size=3, stride=2, padding=1, output_padding=1)
-        self.norm5 = nn.InstanceNorm2d(32)
+        self.norm5 = nn.InstanceNorm2d(32, affine=True)
         self.deconv3 = nn.ConvTranspose2d(32, 3, kernel_size=3, stride=1, padding=1)
     
     def forward(self, x):
@@ -35,13 +35,13 @@ class D(nn.Module):
     def __init__(self):
         super(D, self).__init__()
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
-        self.norm1 = nn.InstanceNorm2d(32)
+        self.norm1 = nn.InstanceNorm2d(32, affine=True)
         self.conv2 = nn.Conv2d(32, 128, kernel_size=3, stride=2, padding=1)
-        self.norm2 = nn.InstanceNorm2d(128)
+        self.norm2 = nn.InstanceNorm2d(128, affine=True)
         self.conv3 = nn.Conv2d(128, 256, kernel_size=5, stride=2, padding=2)
-        self.norm3 = nn.InstanceNorm2d(256)
+        self.norm3 = nn.InstanceNorm2d(256, affine=True)
         self.conv4 = nn.Conv2d(256, 512, kernel_size=24, stride=1)
-        self.norm4 = nn.InstanceNorm2d(512)
+        self.norm4 = nn.InstanceNorm2d(512, affine=True)
         self.out = nn.Linear(512, 1)
     
     def forward(self, x):
