@@ -10,10 +10,10 @@ def add_to_generated_pool(pool_name, new_imgs, b=100, B=200):
     global pool_y
     assert pool_name in ["pool_x", "pool_y"]
     #
-    if pool_name == "pool_x" and pool_x == None:
+    if pool_name == "pool_x" and type(pool_x) == type(None):
         pool_x = np.array(new_imgs.cpu().detach().numpy())
         return
-    if pool_name == "pool_y" and pool_y == None:
+    if pool_name == "pool_y" and type(pool_y) == type(None):
         pool_y = np.array(new_imgs.cpu().detach().numpy())
         return
     if pool_name == "pool_x" and pool_x.shape[0] < B:
