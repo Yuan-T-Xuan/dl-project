@@ -11,20 +11,20 @@ def add_to_generated_pool(pool_name, new_imgs, b=100, B=200):
     assert pool_name in ["pool_x", "pool_y"]
     #
     if pool_name == "pool_x" and pool_x == None:
-        pool_x = np.array(new_imgs.detach().numpy())
+        pool_x = np.array(new_imgs.cpu().detach().numpy())
         return
     if pool_name == "pool_y" and pool_y == None:
-        pool_y = np.array(new_imgs.detach().numpy())
+        pool_y = np.array(new_imgs.cpu().detach().numpy())
         return
     if pool_name == "pool_x" and pool_x.shape[0] < B:
-        new_imgs_numpy = np.array(new_imgs.detach().numpy())
+        new_imgs_numpy = np.array(new_imgs.cpu().detach().numpy())
         pool_x = np.vstack((pool_x, new_imgs_numpy))
         if pool_x.shape[0] > B:
             np.random.shuffle(pool_x)
             pool_x = pool_x[:B]
         return
     if pool_name == "pool_y" and pool_y.shape[0] < B:
-        new_imgs_numpy = np.array(new_imgs.detach().numpy())
+        new_imgs_numpy = np.array(new_imgs.cpu().detach().numpy())
         pool_y = np.vstack((pool_y, new_imgs_numpy))
         if pool_y.shape[0] > B:
             np.random.shuffle(pool_y)
@@ -34,7 +34,7 @@ def add_to_generated_pool(pool_name, new_imgs, b=100, B=200):
     pool = pool_x
     if pool_name == "pool_y":
         pool = pool_y
-    new_imgs_numpy = np.array(new_imgs.detach().numpy())
+    new_imgs_numpy = np.array(new_imgs.cpu().detach().numpy())
     np.random.shuffle(new_imgs_numpy)
     new_imgs_numpy = new_imgs_numpy[:int(b/2)]
     np.random.shuffle(pool)
