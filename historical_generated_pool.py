@@ -36,10 +36,24 @@ def add_to_generated_pool(pool_name, new_imgs, b=100, B=200):
         pool = pool_y
     new_imgs_numpy = np.array(new_imgs.detach().numpy())
     np.random.shuffle(new_imgs_numpy)
-    new_imgs_numpy = new_imgs_numpy[:(b/2)]
+    new_imgs_numpy = new_imgs_numpy[:int(b/2)]
     np.random.shuffle(pool)
     if pool_name == "pool_x":
-        pool_x = np.vstack((pool[(b/2):], new_imgs_numpy))
+        pool_x = np.vstack((pool[int(b/2):], new_imgs_numpy))
     else:
-        pool_y = np.vstack((pool[(b/2):], new_imgs_numpy))
+        pool_y = np.vstack((pool[int(b/2):], new_imgs_numpy))
+
+def get_batch_from_pool(pool_name, b=100):
+    global pool_x
+    global pool_y
+    assert pool_name in ["pool_x", "pool_y"]
+    pool = pool_x
+    if pool_name == "pool_y":
+        pool = pool_y
+    index_to_select = list(range(len(pool)))
+    random.shuffle(index_to_select)
+    index_to_select = index_to_select[:b]
+    tensor_to_return = torch.tensor(pool[index_to_select]).cuda()
+    return tensor_to_return
+
 
