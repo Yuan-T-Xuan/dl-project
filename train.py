@@ -19,7 +19,7 @@ def loss_cyc(generated_x, generated_y, imgs_x, imgs_y, G, F):
     part2 = torch.mean(torch.abs(G(generated_x) - imgs_y))
     return part1 + part2
 
-def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda, e_offset=0):
+def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, e_offset=0):
     optimizer_G = optim.Adam(G.parameters(), lr = lr)
     optimizer_F = optim.Adam(F.parameters(), lr = lr)
     optimizer_Dx = optim.Adam(Dx.parameters(), lr = lr)
