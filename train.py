@@ -4,6 +4,7 @@ from model import init_weights
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from torch import optim
+from historical_generated_pool import *
 
 def loss_D(real_imgs, generated_imgs, D):
     part1 = torch.mean((D(real_imgs) - 1.0).pow(2))
@@ -48,9 +49,9 @@ def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda, e_offse
             for_plot_G.append(loss.item())
             loss.backward()
             optimizer_G.step()
-            add_to_generated_pool(pool_y, generated_y)
+            add_to_generated_pool("pool_y", generated_y)
             # optimize Dy
-            generated_y = get_batch_from_pool(pool_y)
+            generated_y = get_batch_from_pool("pool_y")
             Dy.zero_grad()
             loss = loss_D(_imgs_y, generated_y, Dy)
             for_plot_Dy.append(loss.item())
@@ -64,9 +65,9 @@ def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda, e_offse
             for_plot_F.append(loss.item())
             loss.backward()
             optimizer_F.step()
-            add_to_generated_pool(pool_x, generated_x)
+            add_to_generated_pool("pool_x", generated_x)
             # optimize Dx
-            generated_x = get_batch_from_pool(pool_x)
+            generated_x = get_batch_from_pool("pool_x")
             Dx.zero_grad()
             loss = loss_D(_imgs_x, generated_x, Dx)
             for_plot_Dx.append(loss.item())
