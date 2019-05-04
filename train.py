@@ -19,7 +19,7 @@ def loss_cyc(generated_x, generated_y, imgs_x, imgs_y, G, F):
     part2 = torch.mean(torch.abs(G(generated_x) - imgs_y))
     return part1 + part2
 
-def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, e_offset=0):
+def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, lmbda=20.0, e_offset=0):
     optimizer_G = optim.Adam(G.parameters(), lr = lr)
     optimizer_F = optim.Adam(F.parameters(), lr = lr)
     optimizer_Dx = optim.Adam(Dx.parameters(), lr = lr)
@@ -30,7 +30,7 @@ def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, e_offset=0):
     for_plot_Dy = list()
     for e in range(epochs):
         print(e)
-        if e % 2 == 0:
+        if True:
             torch.save(G, "/content/gdrive/My Drive/model3_test1/saved_G_" + str(e_offset+e) + ".pt")
             torch.save(F, "/content/gdrive/My Drive/model3_test1/saved_F_" + str(e_offset+e) + ".pt")
             torch.save(Dx, "/content/gdrive/My Drive/model3_test1/saved_Dx_" + str(e_offset+e) + ".pt")
@@ -45,7 +45,7 @@ def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, e_offset=0):
             generated_y = G(_imgs_x)
             generated_x = F(_imgs_y)
             G.zero_grad()
-            loss = 10.0 * loss_cyc(generated_x, generated_y, _imgs_x, _imgs_y, G, F) + loss_G(generated_y, Dy)
+            loss = lmbda * loss_cyc(generated_x, generated_y, _imgs_x, _imgs_y, G, F) + loss_G(generated_y, Dy)
             for_plot_G.append(loss.item())
             loss.backward()
             optimizer_G.step()
@@ -61,7 +61,7 @@ def train(G, F, Dx, Dy, lr, data_loader_x, data_loader_y, epochs, e_offset=0):
             generated_y = G(_imgs_x)
             generated_x = F(_imgs_y)
             F.zero_grad()
-            loss = 10.0 * loss_cyc(generated_x, generated_y, _imgs_x, _imgs_y, G, F) + loss_G(generated_x, Dx)
+            loss = lmbda * loss_cyc(generated_x, generated_y, _imgs_x, _imgs_y, G, F) + loss_G(generated_x, Dx)
             for_plot_F.append(loss.item())
             loss.backward()
             optimizer_F.step()

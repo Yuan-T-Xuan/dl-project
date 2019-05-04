@@ -5,7 +5,7 @@ import random
 pool_x = None
 pool_y = None
 
-def add_to_generated_pool(pool_name, new_imgs, b=100, B=200):
+def add_to_generated_pool(pool_name, new_imgs, b=1, B=50):
     global pool_x
     global pool_y
     assert pool_name in ["pool_x", "pool_y"]
@@ -35,15 +35,22 @@ def add_to_generated_pool(pool_name, new_imgs, b=100, B=200):
     if pool_name == "pool_y":
         pool = pool_y
     new_imgs_numpy = np.array(new_imgs.cpu().detach().numpy())
-    np.random.shuffle(new_imgs_numpy)
-    new_imgs_numpy = new_imgs_numpy[:int(b/2)]
+    if b > 1:
+        np.random.shuffle(new_imgs_numpy)
+        new_imgs_numpy = new_imgs_numpy[:int(b/2)]
     np.random.shuffle(pool)
     if pool_name == "pool_x":
-        pool_x = np.vstack((pool[int(b/2):], new_imgs_numpy))
+        if b > 1:
+            pool_x = np.vstack((pool[int(b/2):], new_imgs_numpy))
+        else:
+            pool_x = np.vstack((pool[1:], new_imgs_numpy))
     else:
-        pool_y = np.vstack((pool[int(b/2):], new_imgs_numpy))
+        if b > 1:
+            pool_y = np.vstack((pool[int(b/2):], new_imgs_numpy))
+        else:
+            pool_y = np.vstack((pool[1:], new_imgs_numpy))
 
-def get_batch_from_pool(pool_name, b=100):
+def get_batch_from_pool(pool_name, b=1):
     global pool_x
     global pool_y
     assert pool_name in ["pool_x", "pool_y"]
